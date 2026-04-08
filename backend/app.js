@@ -11,12 +11,7 @@ const { connectRedis, redisClient } = require("./redis.js");
 
 app.use(loggerMiddleware);
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Allow only your frontend's origin
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(cookieParser());
 
 app.use("/api", userRoutes);
