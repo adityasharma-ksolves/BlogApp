@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")).render(
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: "https://dev-c8zdmgqrwhub0oz4.us.auth0.com/api/v2/", // ADD THIS
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE, // ADD THIS
       }}
     >
       {/* highlight-end auth0-provider */}
