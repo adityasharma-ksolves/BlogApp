@@ -41,7 +41,7 @@ return ( <nav className="flex justify-between items-center px-6 py-4 bg-gray-900
       </>
     ) : (
       <>
-        <span className="text-sm">{user.email}</span>
+        <span className="text-sm">{user.name}</span>
 
         <button
           onClick={() =>

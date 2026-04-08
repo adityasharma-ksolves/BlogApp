@@ -1,19 +1,23 @@
 const express = require("express");
 const app = express();
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
-const cors =require('cors');
+const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
 const authRoutes = require("./routes/authRoutes");
 const loggerMiddleware = require("./middleware/loggerMiddleware");
-const {connectRedis,redisClient}=require("./redis.js")
+const { connectRedis, redisClient } = require("./redis.js");
 
 app.use(loggerMiddleware);
 app.use(express.json());
-app.use(cors())
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow only your frontend's origin
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
-
 
 app.use("/api", userRoutes);
 app.use("/api/post", postRoutes);
