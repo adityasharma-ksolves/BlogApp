@@ -1,24 +1,23 @@
 services:
   backend:
     image: aditya53124/my-backend:latest
-    network_mode: "host"  # <--- This bypasses the iptables error
+    network_mode: "host"
     ports:
       - "3000:3000"
     environment:
-      # Use the full Service URI provided by Aiven
       - DATABASE_URL=postgres://avnadmin:REDACTED@pg-22cf7cca-ksolves-7209.i.aivencloud.com:18088/defaultdb?sslmode=require
       - PORT=3000
-      -AUTH0_DOMAIN=dev-c8zdmgqrwhub0oz4.us.auth0.com
-      -AUTH0_AUDIENCE=https://dev-c8zdmgqrwhub0oz4.us.auth0.com/api/v2/
-      -REDIS_PASSWORD=BZOHJlLA2pZmqxTWtJ3MO0TmanByvZBr
+      - AUTH0_DOMAIN=dev-c8zdmgqrwhub0oz4.us.auth0.com
+      - AUTH0_AUDIENCE=https://dev-c8zdmgqrwhub0oz4.us.auth0.com/api/v2/
+      - REDIS_PASSWORD=BZOHJlLA2pZmqxTWtJ3MO0TmanByvZBr
 
   frontend:
     image: aditya53124/my-frontend:latest
-    network_mode: "host"  # <--- This bypasses the iptables error
+    network_mode: "host" 
     ports:
       - "80:80"
     environment:
-      -VITE_AUTH0_DOMAIN=dev-c8zdmgqrwhub0oz4.us.auth0.com
-      -VITE_AUTH0_CLIENT_ID=ul4mp0708ixtqS3NDcWkJ3d59RTxV6AO
-      -PORT=5173
-      -AUTH0_AUDIENCE=https://dev-c8zdmgqrwhub0oz4.us.auth0.com/api/v2/
+      - VITE_AUTH0_DOMAIN=dev-c8zdmgqrwhub0oz4.us.auth0.com
+      - VITE_AUTH0_CLIENT_ID=ul4mp0708ixtqS3NDcWkJ3d59RTxV6AO
+      - PORT=5173
+      - VITE_AUTH0_AUDIENCE=https://dev-c8zdmgqrwhub0oz4.us.auth0.com/api/v2/
