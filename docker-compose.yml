@@ -1,0 +1,14 @@
+services:
+  backend:
+    image: aditya53124/my-backend:latest
+    ports:
+      - "5000:5000"
+    environment:
+      # Use the full Service URI provided by Aiven
+      - DATABASE_URL=postgres://avnadmin:REDACTED@pg-22cf7cca-ksolves-7209.i.aivencloud.com:18088/defaultdb?sslmode=require
+      - PORT=3000
+
+  frontend:
+    image: aditya53124/my-frontend:latest
+    ports:
+      - "80:80"
