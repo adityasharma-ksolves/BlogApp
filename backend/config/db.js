@@ -14,7 +14,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     // This tells Node to trust the Aiven certificate
-    ca: fs.readFileSync("./ca.pem").toString(),
+    // ca: fs.readFileSync("./ca.pem").toString(),
+
+    rejectUnauthorized: false, // This ignores the "self-signed" error
   },
 });
 module.exports = pool;

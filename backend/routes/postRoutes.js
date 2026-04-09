@@ -12,7 +12,7 @@ const {
   approvePost,
   getAllAdmins,
 } = require("../controllers/postController");
-const {checkJwt} = require("../middleware/authMiddleware");
+const { checkJwt } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 const router = express.Router();
 
@@ -37,11 +37,6 @@ router.put(
 );
 
 // Admin List: ONLY accessible by Super Admin and admin
-router.get(
-  "/admins/list",
-  checkJwt,
-  authorize("super_admin"),
-  getAllAdmins,
-);
+router.get("/admins/list", checkJwt, authorize("super_admin"), getAllAdmins);
 
 module.exports = router;

@@ -53,7 +53,6 @@
 
 // export default Dashboard;
 
-
 // import { useEffect, useState } from "react";
 // import { useAuth0 } from "@auth0/auth0-react";
 
@@ -129,7 +128,6 @@
 // }
 
 // export default Dashboard;
-
 
 // import { useEffect, useState } from "react";
 // import { useAuth0 } from "@auth0/auth0-react";
@@ -230,7 +228,6 @@
 
 // export default Dashboard;
 
-
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -254,8 +251,8 @@ function Dashboard() {
         const data = await res.json();
 
         setProfile(data);
-        console.log(data)
-         if (!data.age || data.age === 0) {
+        console.log(data);
+        if (!data.age || data.age === 0) {
           setShowAgeInput(true);
         }
       } catch (err) {

@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+@layer base {
+  :root {
+    --color-ink: #1a1a18;
+    --color-ink-secondary: #6b6b65;
+    --color-ink-muted: #a8a8a2;
+    --color-paper: #faf9f6;
+    --color-paper-warm: #f3f0e9;
+    --color-paper-card: #ffffff;
+    --color-accent: #c85f32;
+    --color-accent-light: #f0e0d6;
+    --color-border: #e0dbd2;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: #f0e0d6;
+    color: #9c3f1c;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-ink text-paper-card text-sm font-medium px-5 py-2.5 rounded-lg transition-all duration-150 hover:bg-ink/80 active:scale-95;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-all duration-150 hover:bg-accent-dark active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-ink-secondary text-sm border border-border px-5 py-2.5 rounded-lg transition-all duration-150 hover:bg-paper-warm hover:border-ink/20 active:scale-95;
+  }
+
+  .btn-pill {
+    @apply bg-ink text-paper-card text-xs font-medium px-5 py-2 rounded-full transition-all duration-150 hover:bg-ink/80 active:scale-95;
+  }
+
+  .card {
+    @apply bg-paper-card border border-border rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-sm;
+  }
+
+  .input-field {
+    @apply w-full bg-paper-warm border border-border rounded-lg px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-accent/50 focus:bg-white transition-all duration-150;
+  }
+
+  .tag-pill {
+    @apply text-xs px-3 py-1 rounded-full border border-border bg-paper-warm text-ink-secondary hover:bg-paper-card transition-colors cursor-pointer;
+  }
+
+  .section-label {
+    @apply text-xs uppercase tracking-widest text-ink-muted font-medium;
+  }
+
+  .animate-stagger-1 { animation-delay: 0ms; }
+  .animate-stagger-2 { animation-delay: 80ms; }
+  .animate-stagger-3 { animation-delay: 160ms; }
+  .animate-stagger-4 { animation-delay: 240ms; }
+
+  /* Prose styles for article body */
+  .prose-blog {
+    @apply text-[17px] leading-[1.85] text-ink;
+  }
+
+  .prose-blog h2 {
+    @apply font-serif text-2xl mt-8 mb-4 text-ink;
+  }
+
+  .prose-blog p {
+    @apply mb-5;
+  }
+
+  .prose-blog blockquote {
+    @apply border-l-4 border-accent pl-4 my-6 italic font-serif text-lg text-ink-secondary;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d0ccc4; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #a8a8a2; }
+
+  /* Reading progress bar */
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--color-accent);
+    border-radius: 0 2px 2px 0;
+    z-index: 9999;
+    transition: width 0.1s linear;
+  }
+}

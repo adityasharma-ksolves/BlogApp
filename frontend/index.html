@@ -3,8 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Auth0 Sample App</title>
+    <title>Meridian — A Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#1a1a18",
+              "ink-secondary": "#6b6b65",
+              "ink-muted": "#a8a8a2",
+              paper: "#faf9f6",
+              "paper-warm": "#f3f0e9",
+              "paper-card": "#ffffff",
+              accent: "#c85f32",
+              "accent-light": "#f0e0d6",
+              border: "#e0dbd2",
+            },
+            fontFamily: {
+              serif: ['"DM Serif Display"', "serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/index.css" />
+    <style>
+      body {
+        font-family: "DM Sans", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-color: theme("colors.paper");
+        color: theme("colors.ink");
+      }
+      ::selection {
+        background-color: theme("colors.accent-light");
+        color: theme("colors.accent");
+      }
+      .card {
+        @apply bg-paper-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5;
+      }
+      .btn-accent {
+        @apply bg-accent hover:bg-accent/90 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 active:scale-[0.97];
+      }
+      .btn-ghost {
+        @apply border border-border hover:border-accent/50 text-ink-secondary hover:text-ink font-medium px-6 py-3 rounded-lg transition-all duration-200 hover:bg-paper-warm;
+      }
+      .btn-pill {
+        @apply bg-ink text-paper font-medium px-6 py-2 rounded-full text-sm shadow-sm transition-all duration-200 hover:bg-ink/90;
+      }
+      .prose-blog {
+        font-size: 1.0625rem;
+        line-height: 1.85;
+      }
+      .prose-blog h2 {
+        @apply font-serif text-2xl mt-8 mb-4;
+      }
+      .prose-blog blockquote {
+        @apply border-l-4 border-accent pl-4 italic font-serif my-6;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

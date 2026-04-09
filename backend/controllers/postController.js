@@ -3,10 +3,26 @@ const { redisClient } = require("../redis.js");
 
 exports.createPost = async (req, res) => {
   const client = await pool.connect();
+  console.log(req.user);
   try {
     const { title, content, tags = [] } = req.body;
-    const userId = req.user.userId;
-    // console.log(req.user);
+    // const userId = req.user.userId;
+    // const userId = req.auth.sub;
+    const auth0Id = req.auth.payload.sub;
+    const userResult = await client.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
+    console.log(req.body);
     await client.query("BEGIN");
 
     // 1. Create the post
@@ -14,9 +30,9 @@ exports.createPost = async (req, res) => {
       "Insert into posts (user_id,title,content) values ($1,$2,$3) RETURNING *",
       [userId, title, content],
     );
-    // console.log(result);
+    console.log(result);
     const post = result.rows[0];
-    // console.log(post);
+    console.log(post);
 
     // 2. process the tags
     for (let tagName of tags) {
@@ -62,41 +78,64 @@ exports.createPost = async (req, res) => {
 
 exports.getPosts = async (req, res) => {
   try {
-    const cached = await redisClient.get("posts:all");
-    const { limit = 5, offset = 0 } = req.query;
+    // const cached = await redisClient.get("posts:all");
+    const { limit = 15, offset = 0 } = req.query;
     const limitNum = parseInt(limit);
     const offsetNum = parseInt(offset);
-    if (cached) {
-      // console.log("cache hit")
-      // console.log(typeof cached)
-      return res.json(JSON.parse(cached));
-    }
+    // if (cached) {
+    //   // console.log("cache hit")
+    //   // console.log(typeof cached)
+    //   return res.json(JSON.parse(cached));
+    // }
 
     // const result = await pool.query(
     //   "select posts.post_id,users.id,users.name,posts.title,posts.content from posts join users on users.id=posts.user_id order by posts.post_id",
     // );
 
+    // const result = await pool.query(
+    //   `
+    //   SELECT
+    //     posts.post_id,
+    //     users.name,
+    //     posts.title,
+    //     posts.content,
+    //     posts.status,
+    //     COALESCE(array_agg(tags.name) FILTER (WHERE tags.name IS NOT NULL), '{}') AS tags
+    //   FROM posts
+    //   JOIN users ON users.id = posts.user_id
+    //   LEFT JOIN post_tags ON post_tags.post_id = posts.post_id
+    //   LEFT JOIN tags ON tags.id = post_tags.tag_id
+    //   GROUP BY posts.post_id, users.name
+    //   ORDER BY posts.post_id DESC limit $1 offset $2
+    // `,
+    //   [limitNum, offsetNum],
+    // );
+
     const result = await pool.query(
-      `
-      SELECT 
-        posts.post_id,
-        users.name,
-        posts.title,
-        posts.content,
-        posts.status,
-        COALESCE(array_agg(tags.name) FILTER (WHERE tags.name IS NOT NULL), '{}') AS tags
-      FROM posts
-      JOIN users ON users.id = posts.user_id
-      LEFT JOIN post_tags ON post_tags.post_id = posts.post_id
-      LEFT JOIN tags ON tags.id = post_tags.tag_id
-      GROUP BY posts.post_id, users.name
-      ORDER BY posts.post_id DESC limit $1 offset $2
-    `,
+      `SELECT 
+  posts.post_id,
+  users.name,
+  posts.title,
+  posts.content,
+  posts.status,
+  COUNT(DISTINCT likes.like_id) AS total_likes,
+  COALESCE(
+    array_agg(DISTINCT tags.name) FILTER (WHERE tags.name IS NOT NULL),
+    '{}'
+  ) AS tags
+FROM posts
+JOIN users ON users.id = posts.user_id
+LEFT JOIN post_tags ON post_tags.post_id = posts.post_id
+LEFT JOIN tags ON tags.id = post_tags.tag_id
+LEFT JOIN likes ON likes.post_id = posts.post_id
+GROUP BY posts.post_id, users.name
+ORDER BY posts.post_id DESC
+LIMIT $1 OFFSET $2;`,
       [limitNum, offsetNum],
     );
     // console.log(result);
 
-    await redisClient.setEx("posts:all", 60, JSON.stringify(result.rows));
+    // await redisClient.setEx("posts:all", 60, JSON.stringify(result.rows));
     // const totalPosts = parseInt(result.rows.count);
     res.status(200).json({
       posts: result.rows,
@@ -110,11 +149,29 @@ exports.getPosts = async (req, res) => {
 };
 
 exports.getMyPosts = async (req, res) => {
+  const client = await pool.connect();
+  console.log("hello");
+  const auth0 = req.auth.payload.sub;
+  console.log(auth0);
   try {
     // const {user_id}=req.body;
     // const result = await pool.query(`select * from posts where user_id=${user_id}`);
 
-    const userId = req.user.userId;
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await client.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
     const result = await pool.query(`select * from posts where user_id=$1`, [
       userId,
     ]);
@@ -128,8 +185,23 @@ exports.getMyPosts = async (req, res) => {
 exports.editPost = async (req, res) => {
   try {
     const { title, content } = req.body;
-    const userId = req.user.userId;
     const postId = req.params.id;
+    // const userId = req.user.userId;
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
     console.log(userId);
     const result = await pool.query(
       "Update posts Set title=COALESCE($1,title),content=COALESCE($2,content) where post_id=$3 and user_id=$4 RETURNING *",
@@ -147,8 +219,25 @@ exports.editPost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   try {
-    const userId = req.user.userId;
     const postId = req.params.id;
+    // const userId = req.user.userId;
+
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
+
     const result = await pool.query(
       "Delete from posts where post_id=$1 and user_id=$2 RETURNING *",
       [postId, userId],
@@ -168,9 +257,25 @@ exports.deletePost = async (req, res) => {
 
 exports.addComments = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
     const postId = req.params.id;
     const { comment, parent_id } = req.body;
+
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
 
     if (parent_id) {
       const parent_check = await pool.query(
@@ -207,7 +312,7 @@ exports.getCommentsWithReplies = async (req, res) => {
 
     const postId = req.params.id;
     // const postId=2;
-    const { limit = 1, offset = 0 } = req.query;
+    const { limit = 5, offset = 0 } = req.query;
 
     const postCheck = await pool.query(
       "Select post_id from posts where post_id=$1",
@@ -269,9 +374,26 @@ exports.getCommentsWithReplies = async (req, res) => {
 };
 
 exports.toggleLikes = async (req, res) => {
+  console.log("Like api call");
   try {
-    const userId = req.user.userId;
     const postId = req.params.id;
+    // const userId = req.user.userId;
+
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const userId = userResult.rows[0].id;
     // Check Existing like
     const existingLike = await pool.query(
       "select * from likes where user_id=$1 and post_id=$2",
@@ -338,7 +460,22 @@ exports.getPostDetails = async (req, res) => {
 exports.approvePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const adminId = req.user.id; // From authMiddleware
+    // const adminId = req.user.id; // From authMiddleware
+    const auth0Id = req.auth.payload.sub;
+    // console.log(auth0Id)
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE auth0_id = $1",
+      [auth0Id],
+    );
+
+    if (userResult.rows.length === 0) {
+      // User does not exist → return error
+      return res
+        .status(403)
+        .json({ error: "User not registered in the system" });
+    }
+
+    const adminId = userResult.rows[0].id;
 
     const result = await pool.query(
       "UPDATE posts SET status = 'approved', approved_by = $1 WHERE post_id = $2 RETURNING *",

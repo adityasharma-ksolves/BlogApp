@@ -13,11 +13,10 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-
 const checkJwt = auth({
-audience: process.env.AUTH0_AUDIENCE,
-issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-tokenSigningAlg: "RS256",
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+  tokenSigningAlg: "RS256",
 });
 
-module.exports = {checkJwt};
+module.exports = { checkJwt };

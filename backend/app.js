@@ -1,3 +1,4 @@
+const NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
