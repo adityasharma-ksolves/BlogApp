@@ -244,7 +244,7 @@ export default function CreatePost({ existingPost = null, onSubmit }) {
 
         alert("Post created successfully!");
         setForm({ title: "", content: "", tags: "" });
-        navigate("/posts");
+        navigate("/");
       }
     } catch (err) {
       console.error(err);
