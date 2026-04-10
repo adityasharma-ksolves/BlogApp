@@ -60,7 +60,7 @@ export default function Admin() {
 
   const fetchPosts = async () => {
     try {
-      const res = await API.get("/post/get");
+      const res = await fetch("http://localhost:3000/api/post/get");
       const data = await res.json();
       setPosts(data.posts || []);
       setLoading(false);

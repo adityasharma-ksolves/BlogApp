@@ -77,6 +77,7 @@ exports.createPost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
+  console.log("eres")
   try {
     // const cached = await redisClient.get("posts:all");
     const { limit = 15, offset = 0 } = req.query;
@@ -133,6 +134,7 @@ ORDER BY posts.post_id DESC
 LIMIT $1 OFFSET $2;`,
       [limitNum, offsetNum],
     );
+    console.log(result.rows)
     // console.log(result);
 
     // await redisClient.setEx("posts:all", 60, JSON.stringify(result.rows));

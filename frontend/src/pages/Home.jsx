@@ -206,6 +206,7 @@ export default function Home() {
     const fetchPosts = async () => {
       try {
         const res = await API.get("/post/get");
+        console.log(res)
         setPosts(res.data.posts || []);
         setLoading(false);
       } catch (err) {

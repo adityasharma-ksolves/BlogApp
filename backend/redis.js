@@ -7,7 +7,7 @@ const redisClient = createClient({
     host: "redis-14601.c14.us-east-1-2.ec2.cloud.redislabs.com",
     port: 14601,
     // tls: true,
-    rejectUnauthorized: true // Add this line
+    rejectUnauthorized: false // Add this line
   },
 });
 redisClient.on("error", (err) => {
