@@ -117,6 +117,7 @@ exports.getPosts = async (req, res) => {
   posts.post_id,
   users.name,
   posts.title,
+  posts. created_at,
   posts.content,
   posts.status,
   COUNT(DISTINCT likes.like_id) AS total_likes,
@@ -148,6 +149,7 @@ LIMIT $1 OFFSET $2;`,
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  
 };
 
 exports.getMyPosts = async (req, res) => {

@@ -124,7 +124,7 @@ export default function PostDetails() {
     return <p className="text-center mt-10 text-gray-500">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
+    <div className="min-h-screen bg-gray-100 py-10 px-4 mt-12">
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-6">
         
         {/* IMAGE */}
