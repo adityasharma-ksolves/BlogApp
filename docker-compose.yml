@@ -15,7 +15,7 @@ services:
     image: aditya53124/my-frontend:latest
     network_mode: "host"
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       - VITE_AUTH0_DOMAIN=dev-c8zdmgqrwhub0oz4.us.auth0.com
       - VITE_AUTH0_CLIENT_ID=ul4mp0708ixtqS3NDcWkJ3d59RTxV6AO
